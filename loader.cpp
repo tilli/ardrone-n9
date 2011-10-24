@@ -15,7 +15,8 @@
 */
 Loader::Loader(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::Loader)
+    ui(new Ui::Loader),
+    mConnectedToDrone(false)
 {
     qDebug() << "[Loader] Constructor";
     // UI created with QtCreator's WYSIWYG editor.
@@ -35,9 +36,11 @@ Loader::Loader(QWidget *parent) :
     mConnectState = 0;
     setStatusLabelText("Searching for AR.Drone<br />.");
 
-    mLoaderTimer = new QTimer(this);
-    connect(mLoaderTimer, SIGNAL(timeout()), this, SLOT(handleLoaderTimer()));
-    mLoaderTimer->start(750);
+    connect(&mLoaderTimer, SIGNAL(timeout()), this, SLOT(handleLoaderTimer()));
+    connect(&connectTimer, SIGNAL(timeout()), this, SLOT(droneConnectionTimeout()));
+    connectTimer.setInterval(5000);
+    connectTimer.setSingleShot(true);
+    mLoaderTimer.start(750);
 
     QTimer::singleShot(1, this, SLOT(lookUpHost()));
 }
@@ -121,6 +124,7 @@ void Loader::handleLoaderTimer()
 void Loader::lookUpHost()
 {
     QHostInfo::lookupHost(WIFI_MYKONOS_IP, this, SLOT(lookedUp(QHostInfo)));
+    connectTimer.start();
 }
 
 /*!
@@ -129,9 +133,10 @@ void Loader::lookUpHost()
 */
 void Loader::lookedUp(const QHostInfo &host)
 {
+    connectTimer.stop();
     if (host.localHostName() == "") {
         qDebug() << "[Loader] Host lookup failed:" << host.errorString();
-        mLoaderTimer->stop();
+        mLoaderTimer.stop();
         ui->labelStatus->setVisible(false);
         setErrorLabelText("Unable to connect to the AR.Drone.<br />Make sure the AR.Drone "
                           "is powered and that the phone is connected to the Drone through "
@@ -152,7 +157,7 @@ void Loader::lookedUp(const QHostInfo &host)
         mFtp->get("version.txt");
         mFtp->close();
         // Set a timeout timer in case FTP get fails.
-        QTimer::singleShot(5000, this, SLOT(droneConnectionTimeout()));
+        connectTimer.start(5000);
     }
 }
 
@@ -162,6 +167,7 @@ void Loader::lookedUp(const QHostInfo &host)
 void Loader::readDroneFtp()
 {
     // FTP answer from the drone. This means we are connected!
+    connectTimer.stop();
     mConnectedToDrone = true;
     mVersion = mFtp->readAll();
 
@@ -171,7 +177,7 @@ void Loader::readDroneFtp()
     } else {
         // The drone has a different firmware. Show arning text and give the user the choice between
         // exiting the app or continuing.
-        mLoaderTimer->stop();
+        mLoaderTimer.stop();
         ui->labelStatus->setVisible(false);
         setErrorLabelText("This program was made for AR.Drone firmware version 1.4.7.<br />The "
                           "current firmware version in the Drone is "
@@ -196,14 +202,14 @@ void Loader::droneConnectionTimeout()
     // a button.
     if (!mConnectedToDrone) {
         qDebug() << "[ParrotDrone] FTP to drone timed out.";
-        mLoaderTimer->stop();
+        mLoaderTimer.stop();
         ui->labelStatus->setVisible(false);
         setErrorLabelText("Unable to retrieve version information from the AR.Drone.<br />Make sure"
                           " the AR.Drone is powered and that the phone is connected to the Drone "
                           "through WLAN. Then please restart the application.<br /><br />"
                           "Note that you need an AR.Drone quadrocopter for this app to be of any "
                           "use. See http://ardrone.parrot.com"
-                          , "8");
+                          , "12");
         ui->labelError->setAutoFillBackground(true);
         ui->labelError->setVisible(true);
         ui->pushButtonExit->setVisible(true);

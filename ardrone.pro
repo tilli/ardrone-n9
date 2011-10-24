@@ -9,12 +9,9 @@
 
 QT += core gui network
 
-TARGET = ARDrone
+TARGET = ardrone
 TEMPLATE = app
 VERSION = 1.0.1
-
-# Avoid auto screen rotation
-DEFINES += ORIENTATIONLOCK
 
 SOURCES += \
     main.cpp\
@@ -43,13 +40,6 @@ FORMS += \
 CONFIG += mobility
 MOBILITY = sensors
 
-symbian {
-    TARGET.UID3 = 0xE7777777
-    TARGET.CAPABILITY += NetworkServices
-    LIBS += -lcone -leikcore -lavkon
-    ICON = drone.svg
-}
-
 RESOURCES += \
     resources.qrc
 
@@ -64,10 +54,10 @@ OTHER_FILES += \
     qtc_packaging/debian_harmattan/changelog
 
 contains(MEEGO_EDITION,harmattan) {
-    target.path = /opt/ARDrone/bin
-    desktop.files = ARDrone.desktop
+    target.path = /opt/ardrone/bin
+    desktop.files = ardrone.desktop
     desktop.path = /usr/share/applications
-    icon.files = ARDrone80.png
+    icon.files = ardrone80x80.png
     icon.path = /usr/share/icons/hicolor/80x80/apps
     INSTALLS += target desktop icon
 }

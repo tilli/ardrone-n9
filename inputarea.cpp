@@ -72,19 +72,13 @@ void InputArea::paintEvent(QPaintEvent *event)
     if (mVideoImageReady && mUIReady && mUIVisible) {
         // The drone has 2 cameras, with different resolutions.
         if (mVideoPixmap.height() == 240) {
-            painter.fillRect(0, 0, 107, 480, Qt::black);
-            painter.fillRect(747, 0, 107, 480, Qt::black);
-            painter.drawPixmap(107, 0, 640, 480, mVideoPixmap);
+            painter.drawPixmap(0, 0, 854, 480, mVideoPixmap);
         } else if (mVideoPixmap.height() == 144) {
-            painter.fillRect(0, 0, 854, 24, Qt::black);
-            painter.fillRect(0, 456, 854, 24, Qt::black);
-            painter.fillRect(0, 0, 163, 480, Qt::black);
-            painter.fillRect(691, 0, 163, 480, Qt::black);
-            painter.drawPixmap(163, 24, 528, 432, mVideoPixmap, 0, 0, 176, 144);
+            painter.drawPixmap(0, 0, 854, 480, mVideoPixmap, 0, 0, 176, 144);
         }
     } else {
         // We are either still loading or in the settings screen.
-        painter.drawPixmap(0, 0, mSplashPixmap);
+        painter.drawPixmap(0, 0, width(), height(), mSplashPixmap);
         if (mNavdataTimedOut && !mShowSettings) {
             // Timeout. Drone has taken too long in sending the first status data.
             painter.setPen(Qt::black);

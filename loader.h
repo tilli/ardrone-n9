@@ -2,6 +2,7 @@
 #define LOADER_H
 
 #include <QWidget>
+#include <QTimer>
 
 class QHostInfo;
 class QFtp;
@@ -38,7 +39,8 @@ private slots:
 
 private:
     Ui::Loader *ui;
-    QTimer *mLoaderTimer;
+    QTimer mLoaderTimer;
+    QTimer connectTimer;
     int mLoadDots;
     QFtp *mFtp;
     QString mVersion;

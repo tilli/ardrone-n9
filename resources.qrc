@@ -1,0 +1,18 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/take_off.png</file>
+        <file>images/battery0.png</file>
+        <file>images/battery1.png</file>
+        <file>images/battery2.png</file>
+        <file>images/battery3.png</file>
+        <file>images/button-close.png</file>
+        <file>images/emergency.png</file>
+        <file>images/joystick_background.png</file>
+        <file>images/joystick_thumb.png</file>
+        <file>images/reset.png</file>
+        <file>images/settings.png</file>
+        <file>images/switch.png</file>
+        <file>images/take_land.png</file>
+        <file>images/drone_bg.png</file>
+    </qresource>
+</RCC>
